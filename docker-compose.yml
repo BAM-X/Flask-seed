@@ -1,0 +1,22 @@
+version: '2'
+services:
+  app:
+    image: bamx/flask-seed
+    build: .
+    environment:
+      - LANG=en_US.UTF-8
+      - APP_ENV=local
+      - PYTHONPATH=/root/app
+    volumes:
+      - ./app:/root/app
+    ports:
+      - '5000:5000'
+  test:
+    image: bamx/flask-seed
+    environment:
+      - LANG=en_US.UTF-8
+      - APP_ENV=test
+      - PYTHONPATH=/root/app
+    command: -m unittest discover
+    volumes:
+      - ./app:/root/app
