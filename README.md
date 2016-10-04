@@ -35,10 +35,10 @@ I suggest you run this in a virtualenv  - see [VirtualEnv docs](http://docs.pyth
  More formally  - the request must consist of a json object containing either a `url` or `urls` field.  A `url` field must contain exactly one url in string format.
  A `urls` field must consist of an array containing one or more elements, each of which must contain a `url` field and optionally a `ua` field specifying the user agents that should match that url.
  User agent matching occurs in the following manner:
-  if a user agent matches one or more regular expressions provided in a `ua` field, the url that is redirected to is the first such match.
-  if a user agent matches one of the special values `tablet` `mobile` or `desktop` and the matching value has a url, it's redirected to the first such match
-  if there is a ua of `default` and the user agent does not match any other value, it is redirected to the first such value
-  Otherwise, the first url provided is used.
+  - if a user agent matches one or more regular expressions provided in a `ua` field, the url that is redirected to is the first such match.
+  - if a user agent matches one of the special values `tablet` `mobile` or `desktop` and the matching value has a url, it's redirected to the first such match
+  - if there is a ua of `default` and the user agent does not match any other value, it is redirected to the first such value
+  - Otherwise, the first url provided is used.
 Note that multiple ua fields can have the same url field.
 
 a `vanity` field can optionally be provided, in which case the shortened url will use that value unless it is already being used. 
