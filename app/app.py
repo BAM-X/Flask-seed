@@ -150,7 +150,11 @@ class ShortenView(MethodView):
             resp['status'] = 'SUCCESS'
         elif u'urls' in data.keys():
             for single in data['urls']:
-                su = ShortUrl(short_url=url, user_agent=single[u'ua'], long_url=single[u'url'])
+                priority=0
+                if single[u'ua'] in ['tablet','mobile','desktop']:
+                    priority= 1
+
+                su = ShortUrl(short_url=url, user_agent=single[u'ua'], long_url=single[u'url'], priority=priority)
                 db_session.add(su)
             db_session.commit()
             resp['url'] = url
