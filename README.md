@@ -21,14 +21,15 @@ To run:
     {urls:[{url: 'url.to/shorten', ua:'desktop'},
     {url: 'm.url.to/shorten', ua:'mobile'}, 
     {url: 't.url.to/shorten', ua:'tablet'}
-    {url:'ie.url.to/shorten', ua:"MSIE ([0-9]{1,}[.0-9]{0,})"}],     vanity: 'my-vanity-url'} `
+    {url:'ie.url.to/shorten', ua:"MSIE ([0-9]{1,}[.0-9]{0,})"}],     vanity: 'my-vanity-url'}
 ```
 
  The response will be of the format:
  
  ```javascript
- {status:'SUCCESS', shorturl:'/shorturl'}
+ {status:'SUCCESS', shorturl:'shorturl'}
  ```
+ Note that the short url can be used by going to `http://<hostname>/s/shorturl`
  
  More formally  - the request must consist of a json object containing either a `url` or `urls` field.  A `url` field must contain exactly one url in string format.
  A `urls` field must consist of an array containing one or more elements, each of which must contain a `url` field and optionally a `ua` field specifying the user agents that should match that url.
@@ -42,14 +43,14 @@ Note that multiple ua fields can have the same url field.
 a `vanity` field can optionally be provided, in which case the shortened url will use that value unless it is already being used. 
 If a `vanity` field is set, but is not available, the request will fail.
 
-  ### analyze
+### analyze
    To get data about a particular shortened url, post to /analyze with the following payload:
-        ```javascript
+```javascript
             {detail: 'summary|ua|full'} 
-        ```
+```
      
    The response will contain:
-    ```javascript
+```javascript
         //summary
         {urls: [{url:'short.url', create_time:'2016-09-23 00:00:34', redirects: 102} ] }
      
@@ -63,7 +64,7 @@ If a `vanity` field is set, but is not available, the request will fail.
      
 ```
      
-## internals
+##internals
  
  short urls are stored as a shortened url, creation timestamp, a user-agent string, and a long url.
  each redirect event is stored as a client ip, timestamp, user-agent, requested url and redirected url

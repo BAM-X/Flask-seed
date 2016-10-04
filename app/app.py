@@ -3,7 +3,7 @@ import re
 import time
 from itertools import ifilter, groupby
 
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, redirect
 from flask.views import MethodView
 from sqlalchemy.sql import func
 
@@ -45,7 +45,7 @@ class RedirectView(MethodView):
                           client_redirected_url=match.long_url)
         db_session.add(r)
         db_session.commit()
-        return jsonify(short_url=short_url, user_agent=ua, redirect_event=r.__repr__())
+        return redirect(match.long_url, code=302)
 
 
 class URLAnalysisView(MethodView):
