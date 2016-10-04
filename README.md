@@ -8,6 +8,7 @@ To run:
 
 `python app/app.py`
 
+I suggest you run this in a virtualenv  - see [VirtualEnv docs](http://docs.python-guide.org/en/latest/dev/virtualenvs/)
 
 ##URL API
 ### shorten
