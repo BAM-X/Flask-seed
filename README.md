@@ -1,6 +1,6 @@
 # Shortener: User-Agent aware URL shortening
 
-Shortener takes a URL, canonicalizes it, and shortens it.  It optionally allows for different urls to be redirected to based on the User-Agent of the request.
+Shortener takes a URL and shortens it.  It optionally allows for different urls to be redirected to based on the User-Agent of the request.
 
 To run:
 
@@ -9,6 +9,10 @@ To run:
 `python app/app.py`
 
 I suggest you run this in a virtualenv  - see [VirtualEnv docs](http://docs.python-guide.org/en/latest/dev/virtualenvs/)
+
+Run tests with
+ `cd app`
+ `python -m unittest discover`
 
 ##URL API
 ### shorten

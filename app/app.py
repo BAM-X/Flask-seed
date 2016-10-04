@@ -7,7 +7,7 @@ from flask import Flask, jsonify, request, redirect
 from flask.views import MethodView
 from sqlalchemy.sql import func
 
-from database import init_db, db_session
+from database import init_db, db_session,clear_db
 from models import ShortUrl, RedirectEvent
 
 app = Flask(__name__, static_url_path='/', static_folder='static')
@@ -17,6 +17,7 @@ last_s = time.time() / 60
 
 def getMatcher(ua):
     """Get a matcher method for a given user agent"""
+
     # see https://developer.mozilla.org/en-US/docs/Web/HTTP/Browser_detection_using_the_user_agent
     def matcher(url):
         if url.user_agent == 'mobile':
@@ -38,7 +39,7 @@ class RedirectView(MethodView):
         match = None
         urls = ShortUrl.query.filter(ShortUrl.short_url == short_url).order_by(ShortUrl.priority).all()
         if len(urls) == 0:
-            return jsonify({'status':'FAILED', 'message': 'No such short path'})
+            return jsonify({'status': 'FAILED', 'message': 'No such short path'})
         try:
             match = ifilter(getMatcher(ua), urls).next()
         except StopIteration:
@@ -53,7 +54,6 @@ class RedirectView(MethodView):
 
 
 class URLAnalysisView(MethodView):
-
     def get(self, short_url):
         """Get all redirect events for a given short url"""
         events = (x.__repr__() for x in
@@ -106,9 +106,8 @@ class AnalysisView(MethodView):
 
 
 class ShortenView(MethodView):
-
     def getURL(self):
-        """Get a probably unique URL in the database. Uses current seconds, and a counter, plus 8 bits of randomness."""
+        """Get a unique URL in the database. Uses current seconds, and a counter, plus 8 bits of randomness."""
         global counter, last_s
         url = ""
         while True:
@@ -143,16 +142,16 @@ class ShortenView(MethodView):
             url = self.getURL()
 
         if u'url' in data.keys():
-            su = ShortUrl(short_url=url, user_agent='*', long_url=data[u'url'])
+            su = ShortUrl(short_url=url, user_agent='.', long_url=data[u'url'])
             db_session.add(su)
             db_session.commit()
             resp['url'] = url
             resp['status'] = 'SUCCESS'
         elif u'urls' in data.keys():
             for single in data['urls']:
-                priority=0
-                if single[u'ua'] in ['tablet','mobile','desktop']:
-                    priority= 1
+                priority = 0
+                if single[u'ua'] in ['tablet', 'mobile', 'desktop']:
+                    priority = 1
 
                 su = ShortUrl(short_url=url, user_agent=single[u'ua'], long_url=single[u'url'], priority=priority)
                 db_session.add(su)
@@ -183,9 +182,10 @@ def shutdown_session(exception=None):
     db_session.remove()
 
 
+def clear_database():
+    clear_db()
+
+
 if __name__ == "__main__":
     init_db()
-    sr = ShortUrl(short_url="temp", user_agent="desktop", long_url="https://google.com/")
-    db_session.add(sr)
-    db_session.commit()
     app.run(debug=True, host='0.0.0.0')
