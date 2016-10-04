@@ -204,19 +204,159 @@ class TestAnalyzer(AppTestCase):
 
 class TestRedirect(AppTestCase):
     def test_redirect_default(self):
+        mobile_ua = {
+            'HTTP_USER_AGENT': 'Mozilla/5.0 (Linux; <Android Version>; <Build Tag etc.>) AppleWebKit/<WebKit Rev> (KHTML, like Gecko) Chrome/43.0.2357.65 Mobile Safari/537.36'}
+        tablet_ua = {
+            'HTTP_USER_AGENT': 'Mozilla/5.0 (Android 4.4; Tablet; rv:41.0) Gecko/41.0 Firefox/41.0'}
+        desktop_ua = {
+            'HTTP_USER_AGENT': 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36'}
+        response = self.app.post('/shorten', data=json.dumps(dict(url='https://www.google.com')),
+                                 content_type='application/json')
+        resp = json.loads(response.data)
+        url1 = resp['url']
+
+        response = self.app.get('/s/' + url1, environ_base=mobile_ua)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.location, 'https://www.google.com')
+
+        response = self.app.get('/s/' + url1, environ_base=tablet_ua)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.location, 'https://www.google.com')
+
+        response = self.app.get('/s/' + url1, environ_base=desktop_ua)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.location, 'https://www.google.com')
+
         pass
 
     def test_redirect_ua_match(self):
-        pass
+        mobile_ua = {
+            'HTTP_USER_AGENT': 'Mozilla/5.0 (Linux; <Android Version>; <Build Tag etc.>) AppleWebKit/<WebKit Rev> (KHTML, like Gecko) Chrome/43.0.2357.65 Mobile Safari/537.36'}
+        tablet_ua = {
+            'HTTP_USER_AGENT': 'Mozilla/5.0 (Android 4.4; Tablet; rv:41.0) Gecko/41.0 Firefox/41.0'}
+        desktop_ua = {
+            'HTTP_USER_AGENT': 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36'}
+        response = self.app.post('/shorten',
+                                 data=json.dumps(dict(urls=(dict(url='https://windows.google.com', ua='Windows'),
+                                                            dict(url='https://linux.google.com',
+                                                                 ua='Linux')))),
+                                 content_type='application/json')
+        resp = json.loads(response.data)
+        url1 = resp['url']
+
+        response = self.app.get('/s/' + url1, environ_base=mobile_ua)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.location, 'https://linux.google.com')
+
+        response = self.app.get('/s/' + url1, environ_base=tablet_ua)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.location, 'https://windows.google.com')
+
+        response = self.app.get('/s/' + url1, environ_base=desktop_ua)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.location, 'https://windows.google.com')
 
     def test_redirect_ua_no_match(self):
-        pass
+        mobile_ua = {
+            'HTTP_USER_AGENT': 'Mozilla/5.0 (Linux; <Android Version>; <Build Tag etc.>) AppleWebKit/<WebKit Rev> (KHTML, like Gecko) Chrome/43.0.2357.65 Mobile Safari/537.36'}
+        tablet_ua = {
+            'HTTP_USER_AGENT': 'Mozilla/5.0 (Android 4.4; Tablet; rv:41.0) Gecko/41.0 Firefox/41.0'}
+        desktop_ua = {
+            'HTTP_USER_AGENT': 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36'}
+        response = self.app.post('/shorten',
+                                 data=json.dumps(dict(urls=(dict(url='https://www.google.com', ua='Android'),
+                                                            dict(url='https://other.google.com',
+                                                                 ua='Mac')))),
+                                 content_type='application/json')
+        resp = json.loads(response.data)
+        url1 = resp['url']
+
+        response = self.app.get('/s/' + url1, environ_base=mobile_ua)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.location, 'https://www.google.com')
+
+        response = self.app.get('/s/' + url1, environ_base=tablet_ua)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.location, 'https://www.google.com')
+
+        response = self.app.get('/s/' + url1, environ_base=desktop_ua)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.location, 'https://www.google.com')
 
     def test_redirect_mobile(self):
-        pass
+        mobile_ua = {
+            'HTTP_USER_AGENT': 'Mozilla/5.0 (Linux; <Android Version>; <Build Tag etc.>) AppleWebKit/<WebKit Rev> (KHTML, like Gecko) Chrome/43.0.2357.65 Mobile Safari/537.36'}
+        tablet_ua = {
+            'HTTP_USER_AGENT': 'Mozilla/5.0 (Android 4.4; Tablet; rv:41.0) Gecko/41.0 Firefox/41.0'}
+        desktop_ua = {
+            'HTTP_USER_AGENT': 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36'}
+        response = self.app.post('/shorten', data=json.dumps(dict(url='https://www.google.com')),
+                                 content_type='application/json')
+        resp = json.loads(response.data)
+        url1 = resp['url']
+
+        response = self.app.get('/s/' + url1, environ_base=mobile_ua)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.location, 'https://www.google.com')
+
+        response = self.app.get('/s/' + url1, environ_base=tablet_ua)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.location, 'https://www.google.com')
+
+        response = self.app.get('/s/' + url1, environ_base=desktop_ua)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.location, 'https://www.google.com')
 
     def test_redirect_tablet(self):
-        pass
+        mobile_ua = {
+            'HTTP_USER_AGENT': 'Mozilla/5.0 (Linux; <Android Version>; <Build Tag etc.>) AppleWebKit/<WebKit Rev> (KHTML, like Gecko) Chrome/43.0.2357.65 Mobile Safari/537.36'}
+        tablet_ua = {
+            'HTTP_USER_AGENT': 'Mozilla/5.0 (Android 4.4; Tablet; rv:41.0) Gecko/41.0 Firefox/41.0'}
+        desktop_ua = {
+            'HTTP_USER_AGENT': 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36'}
+        response = self.app.post('/shorten',
+                                 data=json.dumps(dict(urls=(dict(url='https://www.google.com', ua='desktop'),
+                                                            dict(url='https://m.google.com',
+                                                                 ua='mobile')))),
+                                 content_type='application/json')
+        resp = json.loads(response.data)
+        url1 = resp['url']
+
+        response = self.app.get('/s/' + url1, environ_base=mobile_ua)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.location, 'https://m.google.com')
+
+        response = self.app.get('/s/' + url1, environ_base=tablet_ua)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.location, 'https://www.google.com')
+
+        response = self.app.get('/s/' + url1, environ_base=desktop_ua)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.location, 'https://www.google.com')
 
     def test_redirect_desktop(self):
-        pass
+        mobile_ua = {
+            'HTTP_USER_AGENT': 'Mozilla/5.0 (Linux; <Android Version>; <Build Tag etc.>) AppleWebKit/<WebKit Rev> (KHTML, like Gecko) Chrome/43.0.2357.65 Mobile Safari/537.36'}
+        tablet_ua = {
+            'HTTP_USER_AGENT': 'Mozilla/5.0 (Android 4.4; Tablet; rv:41.0) Gecko/41.0 Firefox/41.0'}
+        desktop_ua = {
+            'HTTP_USER_AGENT': 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36'}
+        response = self.app.post('/shorten',
+                                 data=json.dumps(dict(urls=(dict(url='https://www.google.com', ua='desktop'),
+                                                            dict(url='https://m.google.com',
+                                                                 ua='tablet')))),
+                                 content_type='application/json')
+        resp = json.loads(response.data)
+        url1 = resp['url']
+
+        response = self.app.get('/s/' + url1, environ_base=mobile_ua)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.location, 'https://www.google.com')
+
+        response = self.app.get('/s/' + url1, environ_base=tablet_ua)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.location, 'https://m.google.com')
+
+        response = self.app.get('/s/' + url1, environ_base=desktop_ua)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.location, 'https://www.google.com')
