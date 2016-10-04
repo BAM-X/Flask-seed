@@ -16,6 +16,7 @@ last_s = time.time() / 60
 
 
 def getMatcher(ua):
+    """Get a matcher method for a given user agent"""
     # see https://developer.mozilla.org/en-US/docs/Web/HTTP/Browser_detection_using_the_user_agent
     def matcher(url):
         if url.user_agent == 'mobile':
@@ -32,9 +33,12 @@ def getMatcher(ua):
 
 class RedirectView(MethodView):
     def get(self, short_url):
+        """Redirect from a given short url to an appropriate expansion, or return failure if no such url exists"""
         ua = request.user_agent.string
         match = None
         urls = ShortUrl.query.filter(ShortUrl.short_url == short_url).order_by(ShortUrl.priority).all()
+        if len(urls) == 0:
+            return jsonify({'status':'FAILED', 'message': 'No such short path'})
         try:
             match = ifilter(getMatcher(ua), urls).next()
         except StopIteration:
@@ -49,7 +53,9 @@ class RedirectView(MethodView):
 
 
 class URLAnalysisView(MethodView):
+
     def get(self, short_url):
+        """Get all redirect events for a given short url"""
         events = (x.__repr__() for x in
                   RedirectEvent.query.filter(RedirectEvent.client_requested_url == short_url).all())
         return jsonify(value=events)
@@ -57,6 +63,7 @@ class URLAnalysisView(MethodView):
 
 class AnalysisView(MethodView):
     def post(self):
+        """Get global analytics on url usage.  See README.md for more details"""
         data = request.get_json(force=True)
         if data[u"detail"] == u"summary":
             urls = db_session.query(ShortUrl.short_url, func.min(ShortUrl.create_time).label('create_time'),
@@ -99,7 +106,9 @@ class AnalysisView(MethodView):
 
 
 class ShortenView(MethodView):
+
     def getURL(self):
+        """Get a probably unique URL in the database. Uses current seconds, and a counter, plus 8 bits of randomness."""
         global counter, last_s
         url = ""
         while True:
@@ -115,7 +124,7 @@ class ShortenView(MethodView):
         return url
 
     def post(self):
-
+        """Create a short url from a long url. See README.md for more details"""
         resp = {'status': 'FAILED'}
         data = request.get_json(force=True)
         vanity = None
