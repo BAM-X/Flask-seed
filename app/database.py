@@ -13,5 +13,4 @@ def init_db():
     from models import ShortUrl, RedirectEvent
     url = ShortUrl()
     re = RedirectEvent()
-    Base.metadata.drop_all(bind=engine)
     Base.metadata.create_all(bind=engine)
