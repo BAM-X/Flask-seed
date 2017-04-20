@@ -1,5 +1,5 @@
-# Flask-seed [![Build Status](https://travis-ci.org/BAM-X/Flask-seed.svg?branch=master)](https://travis-ci.org/BAM-X/Flask-seed)
-Seed for small flask apps developed with Docker and Docker-Compose
+# URL Shortener [![Build Status](https://travis-ci.org/OstrichProjects/url-shortener.svg?branch=master)](https://travis-ci.org/OstrichProjects/url-shortener)
+URL Shortener implemented with flask and sqlite.  Developed with Docker.
 
 ## Useful commands
 ``` bash

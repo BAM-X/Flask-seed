@@ -1,7 +1,7 @@
 version: '2'
 services:
   app:
-    image: bamx/flask-seed
+    image: jonathanost/url-shortener
     build: .
     environment:
       - LANG=en_US.UTF-8
@@ -23,7 +23,7 @@ services:
     entrypoint: "flake8"
     command: /root/app
   test:
-    image: bamx/flask-seed
+    image: jonathanost/url-shortener
     build: .
     environment:
       - LANG=en_US.UTF-8
